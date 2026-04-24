@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Study Flow 2026</title>
+    <style>
+      :root {
+        --bio-color: #2ecc71;
+        --phys-color: #e67e22;
+        --chem-color: #3498db;
+      }
+
+      body {
+        margin: 0;
+        transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background-color: var(--bio-color);
+        color: #2d3436;
+      }
+
+      .container {
+        height: 100vh;
+        overflow-y: scroll;
+        scroll-snap-type: y mandatory;
+        scroll-behavior: smooth;
+      }
+
+      .card-section {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        scroll-snap-align: start;
+      }
+
+      /* Personality: Glassmorphism Card */
+      .card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 2.5rem;
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        width: 320px;
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+      }
+
+      .day-info {
+        margin-bottom: 25px;
+        color: white;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        background: rgba(0, 0, 0, 0.25);
+        padding: 8px 20px;
+        border-radius: 50px;
+        backdrop-filter: blur(5px);
+      }
+
+      .icon {
+        font-size: 3rem;
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+      }
+
+      .year-badge {
+        display: inline-block;
+        margin-top: 5px;
+        font-size: 1rem;
+        opacity: 0.7;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 25px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      li {
+        padding: 12px 8px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #444;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+      }
+
+      /* Subject Specific Accents */
+      .bio-theme h2 {
+        color: var(--bio-color);
+      }
+      .phys-theme h2 {
+        color: var(--phys-color);
+      }
+      .chem-theme h2 {
+        color: var(--chem-color);
+      }
+
+      .bio-theme li {
+        border-left: 4px solid var(--bio-color);
+      }
+      .phys-theme li {
+        border-left: 4px solid var(--phys-color);
+      }
+      .chem-theme li {
+        border-left: 4px solid var(--chem-color);
+      }
+      .footer-credit {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 15px 0;
+        text-align: center;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        z-index: 100; /* Keeps it above the cards */
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.1));
+        pointer-events: none; /* Prevents it from blocking scroll clicks */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <section class="card-section" data-color="#2ecc71">
+        <div class="day-info" id="day-display">Day 0</div>
+        <div class="card bio-theme">
+          <span class="icon">🌿</span>
+          <h2 id="bio-title">Biology</h2>
+          <div class="year-badge" id="bio-year">2016</div>
+          <ul id="bio-list"></ul>
+        </div>
+      </section>
+
+      <section class="card-section" data-color="#e67e22">
+        <div class="card phys-theme">
+          <span class="icon">⚛️</span>
+          <h2 id="phys-title">Physics</h2>
+          <div class="year-badge" id="phys-year">2016</div>
+          <ul id="phys-list"></ul>
+        </div>
+      </section>
+
+      <section class="card-section" data-color="#3498db">
+        <div class="card chem-theme">
+          <span class="icon">🧪</span>
+          <h2 id="chem-title">Chemistry</h2>
+          <div class="year-badge" id="chem-year">2016</div>
+          <ul id="chem-list"></ul>
+        </div>
+      </section>
+
+      <footer class="footer-credit">made with 💖 for tiny by lumie 🌕🧸</footer>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const startDate = new Date("2026-04-22");
+        const today = new Date();
+        const diffTime = today - startDate;
+        const diffDays = Math.max(
+          0,
+          Math.floor(diffTime / (1000 * 60 * 60 * 24)),
+        );
+
+        const currentYear = Math.floor(diffDays / 5) + 2016;
+        const n = diffDays % 5;
+
+        document.getElementById("day-display").innerText =
+          `Study Day ${diffDays + 1}`;
+
+        // Question Logic
+        const qBase1 = 2 * n + 1;
+        const qBase2 = 2 * n + 2;
+        const questionNumbers = [];
+        for (let i = 0; i < 5; i++) {
+          questionNumbers.push(qBase1 + i * 10);
+          questionNumbers.push(qBase2 + i * 10);
+        }
+
+        ["bio", "phys", "chem"].forEach((sub) => {
+          document.getElementById(`${sub}-year`).innerText =
+            `Past Paper: ${currentYear}`;
+          const listEl = document.getElementById(`${sub}-list`);
+          listEl.innerHTML = "";
+          questionNumbers.forEach((q) => {
+            const li = document.createElement("li");
+            li.innerText = `Q. ${q}`;
+            listEl.appendChild(li);
+          });
+        });
+
+        // Background Color Switcher
+        const sections = document.querySelectorAll(".card-section");
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                document.body.style.backgroundColor =
+                  entry.target.getAttribute("data-color");
+              }
+            });
+          },
+          { threshold: 0.6 },
+        );
+
+        sections.forEach((section) => observer.observe(section));
+      });
+    </script>
+  </body>
+</html>
